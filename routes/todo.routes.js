@@ -8,9 +8,6 @@ const router = Router();
 router.get('/todos', async (req, res) => {
   try {
     const todos = await Todo.find({});
-    if (!todos.length) {
-      return res.status(400).json({ message: 'Todos not found...' });
-    }
     res.status(200).json({ todos });
   } catch (error) {
     console.log(error);
@@ -53,16 +50,14 @@ router.put('/todos/:id', async (req, res) => {
     if (!todo) {
       return res.status(400).json({ message: 'Todo not found...' });
     }
-    if (!description) {
-      todo.completed = completed;
-      todo.save();
-      return res.status(200).json({ message: 'Todo was updated' });
-    }
-    if (!completed) {
+    if (description) {
       todo.description = description;
-      todo.save();
-      return res.status(200).json({ message: 'Todo was updated' });
     }
+    if (completed) {
+      todo.completed = completed;
+    }
+    todo.save();
+    return res.status(200).json({ message: 'Todo was updated' });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: 'Somthing wrong...' });
